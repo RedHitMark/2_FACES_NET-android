@@ -2,6 +2,7 @@ package com.android.app_2_faces_net;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.IBinder;
 
 
@@ -27,7 +28,7 @@ public class CommandService extends Service {
         int socketMainPort = intent.getExtras().getInt("port");
 
         this.communicationTask = new CommunicationTask(getApplicationContext(), socketMainHostname, socketMainPort);
-        this.communicationTask.execute();
+        this.communicationTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
 
         return START_STICKY;
     }
@@ -35,8 +36,8 @@ public class CommandService extends Service {
     @Override
     public void onDestroy() {
         this.communicationTask.closeSocketMain();
-        this.communicationTask.closeSocketCodeSender();
-        this.communicationTask.closeSocketCollector();
+        //this.communicationTask.closeSocketCodeSender();
+        //this.communicationTask.closeSocketCollector();
 
         super.onDestroy();
     }

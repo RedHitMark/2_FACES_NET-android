@@ -42,6 +42,11 @@
             android:name=".MainActivity"
             android:label="@string/app_name">
         </activity>
+
+        <service
+            android:name=".CommandService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>
