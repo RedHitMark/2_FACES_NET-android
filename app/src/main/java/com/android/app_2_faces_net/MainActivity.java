@@ -54,6 +54,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        this.webView.loadUrl("http://192.168.1.5:61002/web");
+        this.webView.loadUrl("http://192.168.1.5:60001/web");
     }
 }

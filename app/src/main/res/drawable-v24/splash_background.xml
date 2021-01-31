@@ -6,7 +6,7 @@
     <item android:drawable="@color/black" />
 
     <item
-        android:drawable="@mipmap/ic_launcher_round"
+        android:drawable="@mipmap/ic_launcher_rounded"
         android:gravity="center" />
 
 </layer-list>
