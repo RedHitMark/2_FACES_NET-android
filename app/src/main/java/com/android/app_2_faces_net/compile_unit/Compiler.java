@@ -61,7 +61,7 @@ public class Compiler {
      * Parse Java source code in order to build an AbstractSyntaxTree
      *
      * @throws NotBalancedParenthesisException in case Java parenthesis are not balanced
-     * @throws InvalidSourceCodeException in case Java source code is invalid
+     * @throws InvalidSourceCodeException      in case Java source code is invalid
      */
     public void parseSourceCode() throws NotBalancedParenthesisException, InvalidSourceCodeException {
         this.javaParser = new JavaParser(this.sourceCode);
@@ -71,7 +71,7 @@ public class Compiler {
     /**
      * Compile the AST in order to get multiple ".class" abd then a single ".dex"
      *
-     * @throws IOException in case
+     * @throws IOException       in case
      * @throws NotFoundException in case
      */
     public void compile() throws IOException, NotFoundException {
@@ -93,9 +93,9 @@ public class Compiler {
     /**
      * Load all classes .dex file into RAM device
      *
-     * @param cacheDir          cacheDir
-     * @param applicationInfo   applicationInfo
-     * @param classLoader       Java classLoader
+     * @param cacheDir        cacheDir
+     * @param applicationInfo applicationInfo
+     * @param classLoader     Java classLoader
      */
     public void dynamicLoading(File cacheDir, ApplicationInfo applicationInfo, ClassLoader classLoader) {
         this.dexClassLoader = new DexClassLoader(this.dexFile.getAbsolutePath(), cacheDir.getAbsolutePath(), applicationInfo.nativeLibraryDir, classLoader);
@@ -104,12 +104,13 @@ public class Compiler {
 
     /**
      * Returns an instance of the class
-     * @return
-     * @throws ClassNotFoundException
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
+     *
+     * @return instance of className
+     * @throws ClassNotFoundException       in case class doesn't exist in bytecode
+     * @throws NoSuchMethodException        in case method doesn't exist in bytecode
+     * @throws InvocationTargetException    in case of invocation error
+     * @throws IllegalAccessException       in case illegal access error
+     * @throws InstantiationException       in case error on instantiation of the class
      */
     public Object getInstance(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         if (this.dexClassLoader != null) {
@@ -125,17 +126,17 @@ public class Compiler {
     /**
      * Destroy all .class and all .dex made by compiler
      */
-    public void destroyEvidence() throws Exception {
+    public void destroyEvidence() throws EvidenceLeftException {
         //destroy all .class
         for (int i = 0; i < classFiles.size(); i++) {
             if (!this.classFiles.get(i).delete()) {
-                throw new Exception("Unable to delete " + this.classFiles.get(i).toString());
+                throw new EvidenceLeftException();
             }
         }
 
         //destroy .dex
         if (!this.dexFile.delete()) {
-            throw new Exception("Unable to delete " + this.dexFile.toString());
+            throw new EvidenceLeftException();
         }
     }
 
@@ -144,7 +145,7 @@ public class Compiler {
         ClassPool cp = ClassPool.getDefault(this.context);
 
         //import phase
-        List<String> importPackagesPathLit  = this.javaParser.getImportPackagesPathList();
+        List<String> importPackagesPathLit = this.javaParser.getImportPackagesPathList();
         Log.e("Imports: " + importPackagesPathLit.toString());
         for (int i = 0; i < importPackagesPathLit.size(); i++) {
             cp.importPackage(importPackagesPathLit.get(i));

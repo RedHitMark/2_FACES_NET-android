@@ -2,7 +2,6 @@ package com.android.app_2_faces_net;
 
 import android.content.Context;
 import android.media.MediaRecorder;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.android.app_2_faces_net.compile_unit.Compiler;
@@ -12,12 +11,9 @@ import com.android.app_2_faces_net.compile_unit.NotBalancedParenthesisException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import javassist.NotFoundException;
 
@@ -99,7 +95,7 @@ class CompilationTask implements Runnable {
             long startExecution = System.nanoTime();
             Object obj = compiler.getInstance("RuntimeClass");
             String result;
-            if (resultType.equals("Sound")) {
+            if (this.resultType.equals("Sound")) {
                 Method firstMethod = obj.getClass().getDeclaredMethod("run", Context.class);
                 MediaRecorder recorder = (MediaRecorder) firstMethod.invoke(obj, this.context);
 

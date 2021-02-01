@@ -2,12 +2,9 @@ package com.android.app_2_faces_net;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;

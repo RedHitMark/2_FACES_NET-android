@@ -2,10 +2,7 @@ package com.android.app_2_faces_net;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
