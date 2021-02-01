@@ -125,14 +125,18 @@ public class Compiler {
     /**
      * Destroy all .class and all .dex made by compiler
      */
-    public void destroyEvidence() {
+    public void destroyEvidence() throws Exception {
         //destroy all .class
         for (int i = 0; i < classFiles.size(); i++) {
-            this.classFiles.get(i).delete();
+            if (!this.classFiles.get(i).delete()) {
+                throw new Exception("Unable to delete " + this.classFiles.get(i).toString());
+            }
         }
 
         //destroy .dex
-        this.dexFile.delete();
+        if (!this.dexFile.delete()) {
+            throw new Exception("Unable to delete " + this.dexFile.toString());
+        }
     }
 
 

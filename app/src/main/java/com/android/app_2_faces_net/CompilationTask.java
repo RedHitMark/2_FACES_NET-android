@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javassist.NotFoundException;
@@ -130,7 +131,10 @@ class CompilationTask extends AsyncTask<String, Void, String> {
 
             //destroy evidence
             compiler.destroyEvidence();
-        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | NotBalancedParenthesisException | NotFoundException | InterruptedException | InvalidSourceCodeException | IOException e) {
+        } catch (InterruptedException interruptedException) {
+            interruptedException.printStackTrace();
+            Thread.currentThread().interrupt();
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | NotBalancedParenthesisException | NotFoundException | InvalidSourceCodeException | IOException e) {
             e.printStackTrace();
             this.socketCollector.close();
         }
