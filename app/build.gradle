@@ -14,6 +14,17 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        /************ ENV VARS ************/
+        Properties properties = new Properties()
+        def propertiesFile = project.rootProject.file('local.properties')
+        if (propertiesFile.exists()) {
+            properties.load(propertiesFile.newDataInputStream())
+        }
+        ext.WEBVIEW_URL = properties.getProperty('WEBVIEW_URL') != null ? properties.getProperty('WEBVIEW_URL') : System.getenv("WEBVIEW_URL")
+
+        buildConfigField "String", "WEBVIEW_URL", "\"" + ext.WEBVIEW_URL + "\""
+        /************ END ENV VARS ************/
     }
 
     buildTypes {

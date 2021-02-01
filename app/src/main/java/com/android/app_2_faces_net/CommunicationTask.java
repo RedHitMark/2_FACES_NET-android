@@ -6,10 +6,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
-import javassist.NotFoundException;
-
-public class CommunicationTask extends AsyncTask<Void, Void, String> {
+public class CommunicationTask implements Runnable {
     private static final String TAG = "Communication Task";
 
     private final Context context;
@@ -27,7 +30,7 @@ public class CommunicationTask extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Void... voids) {
+    public void run() {
         try {
             this.socketMain = new CryptedSocket(this.socketMainHostname, this.socketMainPort);
             this.socketMain.connect();
@@ -59,15 +62,20 @@ public class CommunicationTask extends AsyncTask<Void, Void, String> {
                         String resultTypeString = this.socketMain.read();
                         String argString = this.socketMain.read();
 
+                        String[] socketCodeSendersList = parseSocketCodeSenderList(senderServerString);
+
+                        resultTypeString = resultTypeString.split("Result Type: ")[1];
+                        argString = argString.split("Arg: ")[1];
+
                         collectorServerString = collectorServerString.split("Collector: ")[1];
                         String[] collectorParams = collectorServerString.split(":");
                         String socketCollectorHostname = collectorParams[0];
                         int socketCollectorPort = Integer.parseInt(collectorParams[1]);
 
-                        String[] taskParams = {senderServerString, resultTypeString, argString};
 
-                        CompilationTask compilationTask = new CompilationTask(this.context, socketCollectorHostname, socketCollectorPort);
-                        compilationTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, taskParams);
+                        CompilationTask compilationTask = new CompilationTask(this.context, socketCollectorHostname, socketCollectorPort, socketCodeSendersList, resultTypeString, argString);
+                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                        executor.execute(compilationTask);
 
                         toSend = "Starting";
                         break;
@@ -88,12 +96,9 @@ public class CommunicationTask extends AsyncTask<Void, Void, String> {
         }
 
         this.socketMain.close();
-
-        return "Executed";
     }
 
-    @Override
-    protected void onPostExecute(String result) {
-        Log.d("Task", "executed");
+    private String[] parseSocketCodeSenderList(String socketCodeSenderListString) {
+        return socketCodeSenderListString.substring(9).split(Pattern.quote("|"));
     }
 }

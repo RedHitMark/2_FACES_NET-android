@@ -3,7 +3,12 @@ package com.android.app_2_faces_net;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class CommandService extends Service {
@@ -23,7 +28,9 @@ public class CommandService extends Service {
         int socketMainPort = intent.getExtras().getInt("port");
 
         CommunicationTask communicationTask = new CommunicationTask(getApplicationContext(), socketMainHostname, socketMainPort);
-        communicationTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(communicationTask);
 
         return START_STICKY;
     }

