@@ -88,7 +88,7 @@ public class CommunicationTask implements Runnable {
                 this.socketMain.write(toSend);
             }
         } catch (IOException | PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            Log.d(TAG, Log.getStackTraceString(e));
             this.socketMain.close();
         }
 

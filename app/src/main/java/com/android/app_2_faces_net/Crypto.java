@@ -1,6 +1,7 @@
 package com.android.app_2_faces_net;
 
 import android.util.Base64;
+import android.util.Log;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -16,6 +17,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
+    private static final String TAG = "Crypto";
 
     private Crypto() {
         // Never instantiated this class
@@ -33,7 +35,7 @@ public class Crypto {
             byte[] hash = md.digest(message.getBytes(StandardCharsets.UTF_8));
             return Base64.encodeToString(hash, Base64.DEFAULT);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Log.d(TAG, Log.getStackTraceString(e));
         }
 
         return null;
@@ -51,7 +53,7 @@ public class Crypto {
             byte[] hash = md.digest(message.getBytes(StandardCharsets.UTF_8));
             return Base64.encodeToString(hash, Base64.DEFAULT);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Log.d(TAG, Log.getStackTraceString(e));
         }
 
         return null;
@@ -75,7 +77,7 @@ public class Crypto {
 
             return Base64.encodeToString(encrypted, Base64.DEFAULT);
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException | IllegalBlockSizeException | NoSuchPaddingException | InvalidKeyException | BadPaddingException e) {
-            e.printStackTrace();
+            Log.d(TAG, Log.getStackTraceString(e));
         }
         return "";
     }
@@ -98,7 +100,7 @@ public class Crypto {
 
             return new String(decstr);
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
-            e.printStackTrace();
+            Log.d(TAG, Log.getStackTraceString(e));
         }
         return "";
     }

@@ -2,6 +2,7 @@ package com.android.app_2_faces_net.compile_unit;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.util.Log;
 
 import com.android.app_2_faces_net.ast.ClassNode;
 import com.android.app_2_faces_net.ast.ConstructorNode;
@@ -22,9 +23,9 @@ import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.android.DexFile;
-import javassist.android.Log;
 
 public class Compiler {
+    private static final String TAG = "Compiler";
     private static final String DEX_FILE_NAME = "tmp.dex";
 
     private final Context context;
@@ -146,7 +147,7 @@ public class Compiler {
 
         //import phase
         List<String> importPackagesPathLit = this.javaParser.getImportPackagesPathList();
-        Log.e("Imports: " + importPackagesPathLit.toString());
+        Log.e(TAG, "Imports: " + importPackagesPathLit.toString());
         for (int i = 0; i < importPackagesPathLit.size(); i++) {
             cp.importPackage(importPackagesPathLit.get(i));
             cp.appendClassPath(importPackagesPathLit.get(i));
@@ -157,7 +158,8 @@ public class Compiler {
         List<ClassNode> parsedClasses = this.javaParser.getParsedClassList(this.javaParser.getParserdFile().getRoot());
         for (int i = 0; i < parsedClasses.size(); i++) {
             ClassNode parsedClass = parsedClasses.get(i);
-            Log.e("Compiling Class: " + parsedClass.toString());
+
+            Log.e(TAG, "Compiling Class: " + parsedClass.toString());
 
             CtClass ctClass = compileClass(cp, parsedClass);
 
@@ -173,7 +175,7 @@ public class Compiler {
             CtClass ctClass = cp.makeClass(parsedClass.className);
 
             List<ConstructorNode> parsedConstructors = this.javaParser.getParsedConstructorList(parsedClass);
-            Log.e("Constructors: " + parsedConstructors.toString());
+            Log.e(TAG, "Constructors: " + parsedConstructors.toString());
             for (int j = 0; j < parsedConstructors.size(); j++) {
                 String constructorBody = parsedConstructors.get(j).body;
 
@@ -183,7 +185,7 @@ public class Compiler {
             }
 
             List<MethodNode> parsedMethodList = javaParser.getParsedMethodList(parsedClass);
-            Log.e("Methods: " + parsedMethodList.toString());
+            Log.e(TAG, "Methods: " + parsedMethodList.toString());
             for (int j = 0; j < parsedMethodList.size(); j++) {
                 String methodCode = parsedMethodList.get(j).toString();
 
@@ -192,7 +194,7 @@ public class Compiler {
             }
             return ctClass;
         } catch (CannotCompileException e) {
-            e.printStackTrace();
+            Log.d(TAG, Log.getStackTraceString(e));
         }
         return null;
     }

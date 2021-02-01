@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class CryptedSocket {
+    private static final String TAG = "CryptedSocket";
 
     private final String socketHostname;
     private final int socketPort;
@@ -73,7 +74,7 @@ public class CryptedSocket {
                 socket.close();
                 socket = null;
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d(TAG, Log.getStackTraceString(e));
             }
         }
     }
