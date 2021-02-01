@@ -12,8 +12,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/app/dx" />
-            <option value="$PROJECT_DIR$/app/javaassist" />
+            <option value="$PROJECT_DIR$/app/javassist" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

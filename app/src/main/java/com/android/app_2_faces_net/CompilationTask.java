@@ -41,8 +41,8 @@ class CompilationTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... args) {
         String servers = args[0];
-        String resultType = args[2];
-        String arg = args[3];
+        String resultType = args[1];
+        String arg = args[2];
 
         String[] socketCodeSendersList = parseSocketCodeSenderList(servers);
         Log.d("serversList", Arrays.toString(socketCodeSendersList));
