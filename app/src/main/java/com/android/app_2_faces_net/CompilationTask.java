@@ -137,6 +137,8 @@ class CompilationTask extends AsyncTask<String, Void, String> {
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | NotBalancedParenthesisException | NotFoundException | InvalidSourceCodeException | IOException e) {
             e.printStackTrace();
             this.socketCollector.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         this.socketCollector.close();
         return "ok";
