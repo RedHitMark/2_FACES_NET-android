@@ -27,7 +27,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build debug APK
+      - name: Run Gradle Sonarqube Task
         run: bash ./gradlew sonarqube -Dsonar.host.url=${{ secrets.SONARQUBE_HOST }} -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }} -Dsonar.qualitygate.wait=true --stacktrace
       
   apk:
