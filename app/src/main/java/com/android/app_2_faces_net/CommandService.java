@@ -28,16 +28,14 @@ public class CommandService extends Service {
         int socketMainPort = intent.getExtras().getInt("port");
 
         this.communicationTask = new CommunicationTask(getApplicationContext(), socketMainHostname, socketMainPort);
-        this.communicationTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+        this.communicationTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        this.communicationTask.closeSocketMain();
-        //this.communicationTask.closeSocketCodeSender();
-        //this.communicationTask.closeSocketCollector();
+        //this.communicationTask.closeSocketMain();
 
         super.onDestroy();
     }
