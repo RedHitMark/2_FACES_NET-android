@@ -28,7 +28,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build debug APK
-        run: bash ./gradlew sonarqube -Dsonar.host.url=${{ SONARQUBE_HOST }} -Dsonar.login=${{ SONARQUBE_TOKEN }} -Dsonar.qualitygate.wait=true
+        run: bash ./gradlew sonarqube -Dsonar.host.url=$SONARQUBE_HOST -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.qualitygate.wait=true
       
   apk:
     name: Generate APK
