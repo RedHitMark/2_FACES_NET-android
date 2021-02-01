@@ -2,20 +2,10 @@ package com.android.app_2_faces_net;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.android.app_2_faces_net.compile_unit.Compiler;
-import com.android.app_2_faces_net.compile_unit.InvalidSourceCodeException;
-import com.android.app_2_faces_net.compile_unit.NotBalancedParenthesisException;
-
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.regex.Pattern;
 
 import javassist.NotFoundException;
 

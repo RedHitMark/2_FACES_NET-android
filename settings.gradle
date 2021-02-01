@@ -1,2 +1,4 @@
+include ':app:dx'
+include ':app:javaassist'
 include ':app'
 rootProject.name = "2_FACES_NET"
