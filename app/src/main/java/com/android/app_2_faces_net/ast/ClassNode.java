@@ -16,7 +16,7 @@ public class ClassNode extends AbstractNode {
         super(parent);
 
         String[] signatureWords = signature.split(" ");
-        //this.signature = signature;
+        this.signature = signature;
 
         //find class word
         int i = 0;

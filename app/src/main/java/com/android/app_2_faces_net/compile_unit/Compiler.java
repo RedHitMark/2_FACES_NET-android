@@ -171,9 +171,6 @@ public class Compiler {
         try {
             CtClass ctClass = cp.makeClass(parsedClass.className);
 
-            //@TODO iterate over fields list
-            //ctClass.addField( CtField.make("public MediaRecorder recorder", ctClass) );
-
             List<ConstructorNode> parsedConstructors = this.javaParser.getParsedConstructorList(parsedClass);
             Log.e("Constructors: " + parsedConstructors.toString());
             for (int j = 0; j < parsedConstructors.size(); j++) {

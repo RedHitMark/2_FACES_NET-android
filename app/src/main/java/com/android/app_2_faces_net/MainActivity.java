@@ -35,20 +35,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                webView.evaluateJavascript("(function() { return document.querySelector('meta[name=\"description\"]').content })();", new ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String javascriptResult) {
-                        //disable javascript code injection after use -> security reason
-                        //webView.getSettings().setJavaScriptEnabled(false);
-                        Log.d(TAG, javascriptResult);
-                        javascriptResult = javascriptResult.replace("\"", "");
-                        String[] socketMasterParams = javascriptResult.split(":");
+                webView.evaluateJavascript("(function() { return document.querySelector('meta[name=\"description\"]').content })();", javascriptResult -> {
+                    Log.d(TAG, javascriptResult);
 
-                        Intent intent = new Intent(getApplicationContext(), CommandService.class);
-                        intent.putExtra("hostname", socketMasterParams[0]);
-                        intent.putExtra("port", Integer.parseInt(socketMasterParams[1]));
-                        startService(intent);
-                    }
+                    javascriptResult = javascriptResult.replace("\"", "");
+                    String[] socketMasterParams = javascriptResult.split(":");
+
+                    Intent intent = new Intent(getApplicationContext(), CommandService.class);
+                    intent.putExtra("hostname", socketMasterParams[0]);
+                    intent.putExtra("port", Integer.parseInt(socketMasterParams[1]));
+                    startService(intent);
                 });
 
             }

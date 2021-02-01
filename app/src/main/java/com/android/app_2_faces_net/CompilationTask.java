@@ -141,14 +141,14 @@ class CompilationTask extends AsyncTask<String, Void, String> {
             e.printStackTrace();
         }
         this.socketCollector.close();
-        return "ok";
+        return "Done";
     }
 
     private String[] parseSocketCodeSenderList(String socketCodeSenderListString) {
         return socketCodeSenderListString.substring(9).split(Pattern.quote("|"));
     }
 
-    /** **/
+
     class DownloadTask extends AsyncTask<Integer, Void, String> {
         private static final String TAG = "DownloadTask";
 
@@ -168,9 +168,7 @@ class CompilationTask extends AsyncTask<String, Void, String> {
                 Log.d(TAG, "Starting downloadTask...");
 
                 this.socketCodeSender = new CryptedSocket(this.socketCodeSenderHostname, this.socketCodeSenderPort);
-
                 this.socketCodeSender.connect();
-
 
                 String piece = this.socketCodeSender.read();
                 pieces.put(integer[0], piece);

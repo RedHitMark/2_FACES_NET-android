@@ -25,13 +25,10 @@ public class CryptedSocket {
      * Establish a connection with the given socket
      */
     public void connect() throws IOException {
-        if (socket == null) {
-            //Log.d(LOGCAT_TAG, "[Connecting to SocketMain...]");
-            this.socket = new Socket(this.socketHostname, this.socketPort);
+        this.socket = new Socket(this.socketHostname, this.socketPort);
 
-            this.out = new PrintWriter(this.socket.getOutputStream(), true);
-            this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-        }
+        this.out = new PrintWriter(this.socket.getOutputStream(), true);
+        this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
     }
 
     /**
@@ -57,11 +54,12 @@ public class CryptedSocket {
      * @param message to be encrypted and written
      */
     public void write(String message) {
-        Log.d("SOCKET", "Writing on SocketMain: " + message);
+        Log.d("SOCKET", "Writing on Socket: " + message);
         String messageEncrypted = Crypto.encryptString(
                 Crypto.sha256(this.socketPort + this.socketHostname),
                 Crypto.md5(this.socketHostname + this.socketPort),
                 message);
+
         this.out.println(messageEncrypted);
     }
 

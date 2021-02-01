@@ -6,6 +6,10 @@ import android.content.pm.PackageManager;
 
 public class DeviceUtils {
 
+    private DeviceUtils() {
+        // Never instantiated this class
+    }
+
     /**
      * Get API level to send back to server
      *

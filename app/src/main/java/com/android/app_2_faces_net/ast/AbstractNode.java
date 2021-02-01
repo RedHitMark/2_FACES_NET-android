@@ -7,7 +7,7 @@ public abstract class AbstractNode {
     public AbstractNode parent;
     public List<AbstractNode> childreen;
 
-    public AbstractNode(AbstractNode parent) {
+    protected AbstractNode(AbstractNode parent) {
         this.parent = parent;
         this.childreen = new ArrayList<>();
     }

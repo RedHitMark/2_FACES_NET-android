@@ -9,6 +9,7 @@ import android.os.IBinder;
 public class CommandService extends Service {
 
     public CommandService() {
+        //Empty constructor
     }
 
     @Override

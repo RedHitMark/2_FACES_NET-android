@@ -17,6 +17,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
 
+    private Crypto() {
+        // Never instantiated this class
+    }
+
     /**
      * Compute sha256 digest of a string
      *
