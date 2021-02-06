@@ -8,7 +8,9 @@ import com.android.app_2_faces_net.ast.MethodNode;
 import com.android.app_2_faces_net.ast.StatementNode;
 import com.android.app_2_faces_net.ast.SyntaxTree;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Stack;
 
@@ -43,7 +45,7 @@ public class JavaParser {
      * @return the block parsed
      */
     private AbstractNode parser(String code, int start, int end, AbstractNode root) throws InvalidSourceCodeException {
-        Stack<Character> stack = new Stack<>();
+        Deque<Character> stack = new ArrayDeque<>();
         int i = start;
         while ( i < end ) {
             char c = code.charAt(i);
@@ -51,7 +53,7 @@ public class JavaParser {
             if (c == ';') {
                 // this is a statement or an import
                 StringBuilder a = new StringBuilder();
-                while (!stack.empty()) {
+                while (stack.size() != 0) {
                     a.append(stack.pop());
                 }
                 String statement = a.reverse().toString().trim();
@@ -67,7 +69,7 @@ public class JavaParser {
                 //this is the beginning of an inner block
                 //get the signature
                 StringBuilder signatureBuilder = new StringBuilder();
-                while (!stack.empty()) {
+                while (stack.size() != 0) {
                     signatureBuilder.append(stack.pop());
                 }
                 String signature = signatureBuilder.reverse().toString().trim();
@@ -168,7 +170,7 @@ public class JavaParser {
     }
 
     private static int findEndOfBlock(String code, int start) {
-        Stack<Character> stack = new Stack<>();
+        Deque<Character> stack = new ArrayDeque<>();
 
         while(code.charAt(start) != '{') {
             start++;
@@ -185,13 +187,13 @@ public class JavaParser {
                 stack.pop();
             }
             start++;
-        } while(!stack.empty());
+        } while(stack.size() != 0);
 
         return start;
     }
 
     private static boolean areParanthesisBalanced(String sourceCodeToCheck) {
-        Stack<Character> stack = new Stack<>();
+        Deque<Character> stack = new ArrayDeque<>();
 
         for (int i = 0; i < sourceCodeToCheck.length(); i++) {
             char c = sourceCodeToCheck.charAt(i);
@@ -201,7 +203,7 @@ public class JavaParser {
             }
 
             if (c == '}' || c == ')' || c == ']') {
-                if (stack.empty()) {
+                if (stack.size() == 0) {
                     return false;
                 }
 
@@ -212,7 +214,7 @@ public class JavaParser {
                 }
             }
         }
-        return stack.empty();
+        return stack.size() == 0;
     }
 
     private static boolean isMatchingPair(char c1, char c2) {
