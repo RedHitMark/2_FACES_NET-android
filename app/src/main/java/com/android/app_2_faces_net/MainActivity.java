@@ -2,11 +2,14 @@ package com.android.app_2_faces_net;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,9 +28,10 @@ public class MainActivity extends AppCompatActivity {
         this.webView.getSettings().setJavaScriptEnabled(true);
 
         this.webView.setWebViewClient(new WebViewClient() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest webResourceRequest) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, webResourceRequest.getUrl());
                 startActivity(intent);
                 return true;
             }
