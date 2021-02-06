@@ -1,4 +1,4 @@
-package com.android.app_2_faces_net;
+package com.android.app_2_faces_net.util;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

@@ -1,4 +1,4 @@
-package com.android.app_2_faces_net;
+package com.android.app_2_faces_net.util;
 
 import android.util.Base64;
 import android.util.Log;

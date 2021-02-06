@@ -2,6 +2,8 @@ package com.android.app_2_faces_net;
 
 import android.util.Log;
 
+import com.android.app_2_faces_net.util.Crypto;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

