@@ -1,7 +1,6 @@
 package com.android.app_2_faces_net.util;
 
 import com.android.app_2_faces_net.CryptedSocket;
-import com.android.app_2_faces_net.model.Server;
 
 public class ParamParser {
     public static CryptedSocket parseSocketCollector(String collectorString) {

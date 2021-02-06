@@ -1,7 +1,5 @@
 package com.android.app_2_faces_net;
 
-import java.util.concurrent.Callable;
-
 public class CollectorTask implements Runnable {
 
     private final CryptedSocket collectorSocket;
