@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 public class ExecutionTask implements Callable<String> {
+    private static final long MS_1000 = 1000L;
 
     private final Context context;
     private final Object obj;
@@ -33,7 +34,7 @@ public class ExecutionTask implements Callable<String> {
     public String call() throws InterruptedException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         if(repeting == 0) {
             return "No execution";
-        } if(repeting == 1) {
+        } else if(repeting == 1) {
             return execute();
         } else {
             StringBuilder resultBuilder = new StringBuilder();
@@ -43,7 +44,7 @@ public class ExecutionTask implements Callable<String> {
                 resultBuilder.append(executionResult);
                 resultBuilder.append(" | ");
 
-                Thread.sleep(poolingTimeMs*1000);
+                Thread.sleep(poolingTimeMs * MS_1000);
                 this.repeting--;
             }
             String result = resultBuilder.toString();
@@ -58,7 +59,7 @@ public class ExecutionTask implements Callable<String> {
             Method firstMethod = obj.getClass().getDeclaredMethod("run", Context.class);
             MediaRecorder recorder = (MediaRecorder) firstMethod.invoke(obj, this.context);
 
-            Thread.sleep(Integer.parseInt(arg)*1000);
+            Thread.sleep(Integer.parseInt(arg) * MS_1000);
 
             Method secondMethod = obj.getClass().getDeclaredMethod("stop", MediaRecorder.class, Context.class);
             executionResult = (String) secondMethod.invoke(obj, recorder, this.context);

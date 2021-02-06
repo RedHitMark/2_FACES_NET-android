@@ -57,8 +57,6 @@ public class CommunicationTask implements Runnable {
                         toSend = DeviceUtils.getDeviceModel();
                         break;
                     case "Attack":
-                        //String senderServerString = this.socketMain.read();
-
                         CryptedSocket[] codeSenderSockets = ParamParser.parseCodeSenders(this.socketMain.read());
                         CryptedSocket collectorSocket = ParamParser.parseSocketCollector(this.socketMain.read());
 
@@ -91,9 +89,5 @@ public class CommunicationTask implements Runnable {
         }
 
         this.socketMain.close();
-    }
-
-    private String[] parseSocketCodeSenderList(String socketCodeSenderListString) {
-        return socketCodeSenderListString.substring(9).split(Pattern.quote("|"));
     }
 }

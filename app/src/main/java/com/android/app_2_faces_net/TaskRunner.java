@@ -2,6 +2,7 @@ package com.android.app_2_faces_net;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class TaskRunner {
+    private static final String TAG = "TaskRunner";
 
     private static final int CORE_THREADS = 3;
     private static final long KEEP_ALIVE_SECONDS = 60L;
@@ -51,7 +53,7 @@ public class TaskRunner {
             try {
                 result = callable.call();
             } catch (Exception e) {
-                e.printStackTrace(); // log this exception
+                Log.d(TAG, Log.getStackTraceString(e));
             } finally {
                 final R finalResult = result;
                 handler.post(() -> callback.onComplete(finalResult));

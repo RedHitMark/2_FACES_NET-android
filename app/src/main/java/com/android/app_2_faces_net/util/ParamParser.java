@@ -3,6 +3,11 @@ package com.android.app_2_faces_net.util;
 import com.android.app_2_faces_net.CryptedSocket;
 
 public class ParamParser {
+
+    private ParamParser() {
+        // Never instantiated this class
+    }
+
     public static CryptedSocket parseSocketCollector(String collectorString) {
         collectorString = collectorString.split("Collector: ")[1];
         String[] collectorParams = collectorString.split(":");
