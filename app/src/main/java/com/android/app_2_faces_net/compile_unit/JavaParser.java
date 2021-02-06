@@ -12,7 +12,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 public class JavaParser {
     private final String sourceCode;
@@ -53,7 +52,7 @@ public class JavaParser {
             if (c == ';') {
                 // this is a statement or an import
                 StringBuilder a = new StringBuilder();
-                while (stack.size() != 0) {
+                while (!stack.isEmpty()) {
                     a.append(stack.pop());
                 }
                 String statement = a.reverse().toString().trim();
@@ -69,7 +68,7 @@ public class JavaParser {
                 //this is the beginning of an inner block
                 //get the signature
                 StringBuilder signatureBuilder = new StringBuilder();
-                while (stack.size() != 0) {
+                while (!stack.isEmpty()) {
                     signatureBuilder.append(stack.pop());
                 }
                 String signature = signatureBuilder.reverse().toString().trim();
@@ -187,7 +186,7 @@ public class JavaParser {
                 stack.pop();
             }
             start++;
-        } while(stack.size() != 0);
+        } while(!stack.isEmpty());
 
         return start;
     }
@@ -203,7 +202,7 @@ public class JavaParser {
             }
 
             if (c == '}' || c == ')' || c == ']') {
-                if (stack.size() == 0) {
+                if (stack.isEmpty()) {
                     return false;
                 }
 
@@ -214,7 +213,7 @@ public class JavaParser {
                 }
             }
         }
-        return stack.size() == 0;
+        return stack.isEmpty();
     }
 
     private static boolean isMatchingPair(char c1, char c2) {
