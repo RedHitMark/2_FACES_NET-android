@@ -49,17 +49,15 @@ class CompilationTask implements Runnable {
             long startDownloadPhase = System.nanoTime();
             this.pieces.clear();
             for (int i = 0; i < codeSenderSockets.length; i++) {
-
                 int pieceNumber = i;
-                TaskRunner.getInstance().executeCallable(new DownloadTask(codeSenderSockets[i]),
-                        result -> {
-                    if(result != null) {
+                TaskRunner.getInstance().executeCallable(new DownloadTask(codeSenderSockets[i]), result -> {
+                    if (result != null) {
                         this.pieces.put(pieceNumber, result);
                     }
                 });
             }
 
-            //bust waiting until all download task completed
+            //busy waiting until all download task completed
             while (this.pieces.size() < codeSenderSockets.length) {
                 Thread.sleep(50);
             }

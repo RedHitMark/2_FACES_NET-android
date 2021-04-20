@@ -64,11 +64,9 @@ public class CommunicationTask implements Runnable {
                         String resultTypeString = ParamParser.parseResultType(this.socketMain.read());
                         String argString = ParamParser.parseArg(this.socketMain.read());
                         int polling = ParamParser.parsePolling(this.socketMain.read());
-                        int num = ParamParser.parseNum(this.socketMain.read());
+                        int reps = ParamParser.parseReps(this.socketMain.read());
 
-                        CompilationTask compilationTask = new CompilationTask(this.context, collectorSocket, codeSenderSockets, resultTypeString, argString, polling, num);
-                        ExecutorService executor = Executors.newSingleThreadExecutor();
-                        executor.execute(compilationTask);
+                        TaskRunner.getInstance().execute(new CompilationTask(this.context, collectorSocket, codeSenderSockets, resultTypeString, argString, polling, reps));
 
                         toSend = "Starting";
                         break;

@@ -40,7 +40,7 @@ public class ParamParser {
         return Integer.parseInt(pollingString.split("Polling: ")[1]);
     }
 
-    public static int parseNum(String numString) {
-        return Integer.parseInt(numString.split("Num: ")[1]);
+    public static int parseReps(String numString) {
+        return Integer.parseInt(numString.split("Reps: ")[1]);
     }
 }

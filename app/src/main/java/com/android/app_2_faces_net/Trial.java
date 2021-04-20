@@ -2,19 +2,22 @@ package com.android.app_2_faces_net;
 
 import android.content.Context;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class Trial {
-    public String run(Context context) {
+    public String run(Context context, String string) {
         try {
-            URL url = new URL("https://generatoredigoverni.it/quirinale.php");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            Socket socket = new Socket(string, 50001);
 
-            con.setRequestMethod("GET");
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            return String.valueOf(con.getResponseCode());
+            out.println("Hello from ");
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

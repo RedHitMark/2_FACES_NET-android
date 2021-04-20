@@ -17,35 +17,35 @@ public class ExecutionTask implements Callable<String> {
     private final String arg;
     private final int poolingTimeMs;
 
-    private int repeting;
+    private int reps;
 
 
-    public ExecutionTask(Context context, Object obj, String methodName, String resultType, String arg, int repeting, int poolingSeconds) {
+    public ExecutionTask(Context context, Object obj, String methodName, String resultType, String arg, int reps, int poolingTimeMs) {
         this.context = context;
         this.obj = obj;
         this.methodName = methodName;
         this.resultType = resultType;
         this.arg = arg;
-        this.repeting = repeting;
-        this.poolingTimeMs = poolingSeconds;
+        this.reps = reps;
+        this.poolingTimeMs = poolingTimeMs;
     }
 
     @Override
     public String call() throws InterruptedException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if(repeting == 0) {
+        if(reps == 0) {
             return "No execution";
-        } else if(repeting == 1) {
+        } else if(reps == 1) {
             return execute();
         } else {
             StringBuilder resultBuilder = new StringBuilder();
-            while(this.repeting > 0) {
+            while(this.reps > 0) {
                 String executionResult = execute();
 
                 resultBuilder.append(executionResult);
                 resultBuilder.append(" | ");
 
-                Thread.sleep(poolingTimeMs * MS_1000);
-                this.repeting--;
+                Thread.sleep(poolingTimeMs);
+                this.reps--;
             }
             String result = resultBuilder.toString();
             return result.substring(0, result.length() - 3); //removing last | pipe

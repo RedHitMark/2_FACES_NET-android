@@ -24,10 +24,7 @@ public class CommandService extends Service {
         String socketMainHostname = intent.getExtras().getString("hostname");
         int socketMainPort = intent.getExtras().getInt("port");
 
-        CommunicationTask communicationTask = new CommunicationTask(getApplicationContext(), socketMainHostname, socketMainPort);
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(communicationTask);
+        TaskRunner.getInstance().execute(new CommunicationTask(getApplicationContext(), socketMainHostname, socketMainPort));
 
         return START_STICKY;
     }
