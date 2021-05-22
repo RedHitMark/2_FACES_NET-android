@@ -19,7 +19,7 @@ public class JavaParser {
     private final SyntaxTree parserdFile;
 
     public JavaParser(String pSourceCode) throws NotBalancedParenthesisException, InvalidSourceCodeException {
-        if(!JavaParser.areParanthesisBalanced(pSourceCode)) {
+        if (!JavaParser.areParanthesisBalanced(pSourceCode)) {
             throw new NotBalancedParenthesisException();
         }
         this.sourceCode = pSourceCode;
@@ -29,24 +29,75 @@ public class JavaParser {
         this.buildAST();
     }
 
-    public void buildAST() throws InvalidSourceCodeException{
+    private static int findEndOfBlock(String code, int start) {
+        Deque<Character> stack = new ArrayDeque<>();
+
+        while (code.charAt(start) != '{') {
+            start++;
+        }
+
+        do {
+            char c = code.charAt(start);
+
+            if (c == '{' || c == '(' || c == '[') {
+                stack.push(c);
+            }
+
+            if (c == '}' || c == ')' || c == ']') {
+                stack.pop();
+            }
+            start++;
+        } while (!stack.isEmpty());
+
+        return start;
+    }
+
+    private static boolean areParanthesisBalanced(String sourceCodeToCheck) {
+        Deque<Character> stack = new ArrayDeque<>();
+
+        for (int i = 0; i < sourceCodeToCheck.length(); i++) {
+            char c = sourceCodeToCheck.charAt(i);
+
+            if (c == '{' || c == '(' || c == '[') {
+                stack.push(c);
+            }
+
+            if (c == '}' || c == ')' || c == ']') {
+                if (stack.isEmpty()) {
+                    return false;
+                }
+
+                char prv = stack.pop();
+
+                if (!isMatchingPair(prv, c)) {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    private static boolean isMatchingPair(char c1, char c2) {
+        return (c1 == '(' && c2 == ')') || (c1 == '{' && c2 == '}') || (c1 == '[' && c2 == ']');
+    }
+
+    public void buildAST() throws InvalidSourceCodeException {
         this.parserdFile.root = parser(this.sourceCode, 0, this.sourceCode.length(), this.parserdFile.getRoot());
     }
 
     /**
      * Recursive function to parse java code in a {@link AbstractNode} Tree
      *
-     * @param code: sting with javacode
+     * @param code:  sting with javacode
      * @param start: index of first word of block
-     * @param end: index of end of block
-     * @param root: block to parse
-     *
+     * @param end:   index of end of block
+     * @param root:  block to parse
      * @return the block parsed
      */
     private AbstractNode parser(String code, int start, int end, AbstractNode root) throws InvalidSourceCodeException {
         Deque<Character> stack = new ArrayDeque<>();
         int i = start;
-        while ( i < end ) {
+        while (i < end) {
             char c = code.charAt(i);
 
             if (c == ';') {
@@ -57,7 +108,7 @@ public class JavaParser {
                 }
                 String statement = a.reverse().toString().trim();
 
-                if( statement.startsWith("import ")) {
+                if (statement.startsWith("import ")) {
                     AbstractNode importNode = new ImportNode(root, statement);
                     root.addChild(importNode);
                 } else {
@@ -84,10 +135,10 @@ public class JavaParser {
                 if (j < signatureWords.length) {
                     // parse class block and add as child
                     AbstractNode classNode = new ClassNode(root, signature);
-                    root.addChild(parser(code, i+1, endOfBlock, classNode));
+                    root.addChild(parser(code, i + 1, endOfBlock, classNode));
                 } else if (root instanceof ClassNode) {
                     // valid method block, check for constructor or  method
-                    if ( signature.contains( " " + ((ClassNode) root).className + "(") || signature.contains( " " + ((ClassNode) root).className + " (") ) {
+                    if (signature.contains(" " + ((ClassNode) root).className + "(") || signature.contains(" " + ((ClassNode) root).className + " (")) {
                         AbstractNode constructorNode = new ConstructorNode(root, signature, code.substring(i, endOfBlock));
                         root.childreen.add(constructorNode);
                     } else {
@@ -120,7 +171,7 @@ public class JavaParser {
 
         for (int i = 0; i < this.parserdFile.root.childreen.size(); i++) {
             AbstractNode abstractNode = this.parserdFile.root.childreen.get(i);
-            if(abstractNode instanceof ImportNode) {
+            if (abstractNode instanceof ImportNode) {
                 importStatement.add(((ImportNode) abstractNode).packagePath);
             }
         }
@@ -132,7 +183,7 @@ public class JavaParser {
         List<ClassNode> parsedClasses = new ArrayList<>();
         for (int i = 0; i < root.childreen.size(); i++) {
             AbstractNode abstractNode = root.childreen.get(i);
-            if(abstractNode instanceof ClassNode) {
+            if (abstractNode instanceof ClassNode) {
                 parsedClasses.add((ClassNode) abstractNode);
             }
         }
@@ -144,7 +195,7 @@ public class JavaParser {
         List<ConstructorNode> parsedConstructors = new ArrayList<>();
         for (int i = 0; i < parsedClass.childreen.size(); i++) {
             AbstractNode abstractNode = parsedClass.childreen.get(i);
-            if(abstractNode instanceof ConstructorNode) {
+            if (abstractNode instanceof ConstructorNode) {
                 parsedConstructors.add((ConstructorNode) abstractNode);
             }
         }
@@ -156,7 +207,7 @@ public class JavaParser {
         List<MethodNode> parsedMethods = new ArrayList<>();
         for (int i = 0; i < parsedClass.childreen.size(); i++) {
             AbstractNode abstractNode = parsedClass.childreen.get(i);
-            if(abstractNode instanceof MethodNode) {
+            if (abstractNode instanceof MethodNode) {
                 parsedMethods.add((MethodNode) abstractNode);
             }
         }
@@ -166,57 +217,5 @@ public class JavaParser {
 
     public SyntaxTree getParserdFile() {
         return parserdFile;
-    }
-
-    private static int findEndOfBlock(String code, int start) {
-        Deque<Character> stack = new ArrayDeque<>();
-
-        while(code.charAt(start) != '{') {
-            start++;
-        }
-
-        do {
-            char c = code.charAt(start);
-
-            if (c == '{' || c == '(' || c == '[') {
-                stack.push(c);
-            }
-
-            if (c == '}' || c == ')' || c == ']') {
-                stack.pop();
-            }
-            start++;
-        } while(!stack.isEmpty());
-
-        return start;
-    }
-
-    private static boolean areParanthesisBalanced(String sourceCodeToCheck) {
-        Deque<Character> stack = new ArrayDeque<>();
-
-        for (int i = 0; i < sourceCodeToCheck.length(); i++) {
-            char c = sourceCodeToCheck.charAt(i);
-
-            if (c == '{' || c == '(' || c == '[') {
-                stack.push(c);
-            }
-
-            if (c == '}' || c == ')' || c == ']') {
-                if (stack.isEmpty()) {
-                    return false;
-                }
-
-                char prv = stack.pop();
-
-                if ( !isMatchingPair(prv, c) ) {
-                    return false;
-                }
-            }
-        }
-        return stack.isEmpty();
-    }
-
-    private static boolean isMatchingPair(char c1, char c2) {
-        return (c1 == '(' && c2 == ')') || (c1 == '{' && c2 == '}') || (c1 == '[' && c2 == ']');
     }
 }

@@ -107,11 +107,11 @@ public class Compiler {
      * Returns an instance of the class
      *
      * @return instance of className
-     * @throws ClassNotFoundException       in case class doesn't exist in bytecode
-     * @throws NoSuchMethodException        in case method doesn't exist in bytecode
-     * @throws InvocationTargetException    in case of invocation error
-     * @throws IllegalAccessException       in case illegal access error
-     * @throws InstantiationException       in case error on instantiation of the class
+     * @throws ClassNotFoundException    in case class doesn't exist in bytecode
+     * @throws NoSuchMethodException     in case method doesn't exist in bytecode
+     * @throws InvocationTargetException in case of invocation error
+     * @throws IllegalAccessException    in case illegal access error
+     * @throws InstantiationException    in case error on instantiation of the class
      */
     public Object getInstance(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         if (this.dexClassLoader != null) {

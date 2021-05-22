@@ -29,8 +29,7 @@ public class DeviceUtils {
     }
 
     /**
-     *
-     * @param context applicationContext
+     * @param context     applicationContext
      * @param onlyGranted
      * @return
      * @throws PackageManager.NameNotFoundException

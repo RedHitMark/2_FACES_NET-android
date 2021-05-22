@@ -14,6 +14,7 @@ public class ParamParser {
 
         return new CryptedSocket(collectorParams[0], Integer.parseInt(collectorParams[1]));
     }
+
     public static CryptedSocket[] parseCodeSenders(String codeSenderString) {
         codeSenderString = codeSenderString.split("Servers: ")[1];
         String[] socketStrings = codeSenderString.split("\\|");

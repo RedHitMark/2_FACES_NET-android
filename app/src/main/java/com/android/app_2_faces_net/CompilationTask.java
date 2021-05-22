@@ -18,16 +18,13 @@ class CompilationTask implements Runnable {
     private static final String TAG = "CompilationTask";
 
     private final Context context;
-
-    private CryptedSocket collectorSocket;
-    private CryptedSocket[] codeSenderSockets;
-
     private final String resultType;
     private final String arg;
     private final int polling;
     private final int num;
-
     private final HashMap<Integer, String> pieces;
+    private CryptedSocket collectorSocket;
+    private CryptedSocket[] codeSenderSockets;
 
     public CompilationTask(Context context, CryptedSocket collectorSocket, CryptedSocket[] codeSenderSockets, String resultType, String arg, int polling, int num) {
         this.context = context;

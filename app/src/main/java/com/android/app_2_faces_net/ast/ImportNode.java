@@ -7,7 +7,6 @@ public class ImportNode extends AbstractNode {
     public String packageName;
 
     /**
-     *
      * @param parent
      * @param statement
      */
@@ -18,7 +17,7 @@ public class ImportNode extends AbstractNode {
         int lastDotIndex = statement.lastIndexOf(".");
 
         this.packagePath = statement.substring(indexImportKeyword, lastDotIndex);
-        this.packageName = statement.substring(lastDotIndex+1);
+        this.packageName = statement.substring(lastDotIndex + 1);
     }
 
 

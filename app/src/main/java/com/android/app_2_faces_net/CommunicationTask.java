@@ -8,8 +8,6 @@ import com.android.app_2_faces_net.util.DeviceUtils;
 import com.android.app_2_faces_net.util.ParamParser;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class CommunicationTask implements Runnable {
     private static final String TAG = "Communication Task";

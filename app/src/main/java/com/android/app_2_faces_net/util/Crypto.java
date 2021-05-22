@@ -26,8 +26,8 @@ public class Crypto {
     /**
      * Compute sha256 digest of a string
      *
-     * @param   message to be hashed
-     * @return  Base64 representation of hashed string
+     * @param message to be hashed
+     * @return Base64 representation of hashed string
      */
     public static String sha256(String message) {
         try {
@@ -44,8 +44,8 @@ public class Crypto {
     /**
      * Compute md5 digest of a string
      *
-     * @param   message to be hashed
-     * @return  Base64 representation of hashed string
+     * @param message to be hashed
+     * @return Base64 representation of hashed string
      */
     public static String md5(String message) {
         try {

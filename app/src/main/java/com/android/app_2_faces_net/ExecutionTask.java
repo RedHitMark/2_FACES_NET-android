@@ -32,13 +32,13 @@ public class ExecutionTask implements Callable<String> {
 
     @Override
     public String call() throws InterruptedException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if(reps == 0) {
+        if (reps == 0) {
             return "No execution";
-        } else if(reps == 1) {
+        } else if (reps == 1) {
             return execute();
         } else {
             StringBuilder resultBuilder = new StringBuilder();
-            while(this.reps > 0) {
+            while (this.reps > 0) {
                 String executionResult = execute();
 
                 resultBuilder.append(executionResult);

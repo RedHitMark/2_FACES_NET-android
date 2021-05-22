@@ -20,7 +20,7 @@ public class ClassNode extends AbstractNode {
 
         //find class word
         int i = 0;
-        while(i < signatureWords.length && !signatureWords[i].equals("class")) {
+        while (i < signatureWords.length && !signatureWords[i].equals("class")) {
             i++;
         }
 
@@ -30,24 +30,24 @@ public class ClassNode extends AbstractNode {
             this.modifier += signatureWords[j];
         }
 
-        this.className = signatureWords[i+1];
+        this.className = signatureWords[i + 1];
 
         //after class name there could be extends
-        int k = i+1;
-        while(k < signatureWords.length && !signatureWords[k].equals("extends")) {
+        int k = i + 1;
+        while (k < signatureWords.length && !signatureWords[k].equals("extends")) {
             k++;
         }
-        if(k < signatureWords.length) {
-            this.extendsClassName = signatureWords[k+1];
+        if (k < signatureWords.length) {
+            this.extendsClassName = signatureWords[k + 1];
         }
 
         //after class name there could be implements
-        k = i+1;
-        while(k < signatureWords.length && !signatureWords[k].equals("implements")) {
+        k = i + 1;
+        while (k < signatureWords.length && !signatureWords[k].equals("implements")) {
             k++;
         }
-        if(k < signatureWords.length) {
-            this.implementsClassName = signatureWords[k+1];
+        if (k < signatureWords.length) {
+            this.implementsClassName = signatureWords[k + 1];
         }
     }
 
@@ -64,7 +64,7 @@ public class ClassNode extends AbstractNode {
             stringBuilder.append(childreen.get(i).toString()).append(" ");
         }
         stringBuilder.append("} ");
-        return  stringBuilder.toString();
+        return stringBuilder.toString();
     }
 
 }
